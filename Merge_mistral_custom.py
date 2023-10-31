@@ -15,7 +15,7 @@ import os
 import bitsandbytes as bnb
 from bitsandbytes.functional import dequantize_4bit
 from peft import PeftModel
-from transformers import AutoModelForCausalLM, LlamaForCausalLM, LlamaTokenizer, BitsAndBytesConfig, CodeLlamaTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, MistralForCausalLM
 import gc
 import copy
 
@@ -70,8 +70,8 @@ def dequantize_model(model, tokenizer, to='./dequantized_model', dtype=torch.bfl
         return model
         
 
-model_path = 'Huggingface-base-model/path-goes-here'
-adapter_path = 'Huggingface-adapter/path-goes-here'
+model_path = 'C:/Users/PC/Documents/text-generation-webui/models/CodeZe14b'
+adapter_path = 'C:/Users/PC/Documents/text-generation-webui/models/CodeZe14b/loras/checkpoint-225'
 
 quantization_config=BitsAndBytesConfig(
             load_in_4bit=True,
@@ -83,7 +83,7 @@ quantization_config=BitsAndBytesConfig(
 try:
     print(f"Starting to load the model {model_path} into memory")
 
-    model = LlamaForCausalLM.from_pretrained(
+    model = MistralForCausalLM.from_pretrained(
         model_path,
         load_in_4bit=True,
         torch_dtype=torch.bfloat16,
@@ -91,11 +91,11 @@ try:
         device_map="auto"
     )
     print(model)
-    tok = LlamaTokenizer.from_pretrained(model_path)
+    tok = AutoTokenizer.from_pretrained(model_path)
     
     # Note: This function outputs the dequantized model without merging the adapter yet
     # The code below it will merge the adapter and then save it to disk
-    model = dequantize_model(model, tok, to='output-folder-for-dequantized-model-here')
+    model = dequantize_model(model, tok, to='C:/Users/PC/Documents/text-generation-webui/models/Codeze14b')
     
     print(model)
     model = PeftModel.from_pretrained(model = model, model_id = adapter_path)
